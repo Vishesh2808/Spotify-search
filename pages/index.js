@@ -114,7 +114,7 @@ export default function Home({}) {
       <>
         <motion.div initial="hidden" animate="visible" variants={list}>
           {songDataArray.map((data) => {
-            return <Song data={data}></Song>;
+            return <Song data={data} key={data.id}></Song>;
           })}
         </motion.div>
       </>
