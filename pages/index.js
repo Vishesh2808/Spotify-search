@@ -1,35 +1,33 @@
 import Head from "next/head";
-import Image from "next/image";
 import Styles from "../styles/stylesheet";
 import { motion } from "framer-motion";
 import { useState } from "react";
 
-export default function Home({}) {
+export async function getServerSideProps() {
+  var authOptions = {
+    method: "POST",
+    body: "grant_type=client_credentials",
+    headers: {
+      Authorization:
+        "Basic OTMyMWUxZjAwYjZiNDIyNWE4Yzg5NDVmODVjODllOGM6NzhkMGM5Mzg4N2M5NGEyMzgyOTNmZjViOWFiODgxNDY=",
+      "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+    },
+    json: true,
+  };
+
+  const res = await fetch("https://accounts.spotify.com/api/token", authOptions)
+  const data = await res.json()
+
+  return { props: { data } }
+}
+
+export default function Home({data}) {
   const [showSongs, setShowSongs] = useState(false);
   const [songDataArray, setSongDataArray] = useState([]);
 
-  function getTokenPromise() {
-    var authOptions = {
-      method: "POST",
-      body: "grant_type=client_credentials",
-      headers: {
-        Authorization:
-          "Basic OTMyMWUxZjAwYjZiNDIyNWE4Yzg5NDVmODVjODllOGM6NzhkMGM5Mzg4N2M5NGEyMzgyOTNmZjViOWFiODgxNDY=",
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
-      },
-      json: true,
-    };
-    return fetch("https://accounts.spotify.com/api/token", authOptions);
-  }
 
   const getSongDetailsPromise = async () => {
     setShowSongs(true);
-    let token1 = getTokenPromise()
-      .then((response) => response.json())
-      .then((value) => {
-        return value["access_token"];
-      });
-    const token = await token1;
     if (process.browser) {
       var song = document.getElementById("songNameInput").value;
     }
@@ -37,12 +35,26 @@ export default function Home({}) {
       "https://api.spotify.com/v1/search?q=" + song + "&type=track",
       {
         headers: {
-          Authorization: "Bearer " + token,
+          Authorization: "Bearer " + data['access_token'],
           "Content-Type": "application/json",
         },
       }
     );
   };
+
+  async function getSongData() {
+    let songData = getSongDetailsPromise()
+      .then((response) => response.json())
+      .then((data) => {
+        return data;
+      });
+    songData = await songData;
+
+    let arrayOfData = songData["tracks"]["items"].map((data) => {
+      return data;
+    });
+    setSongDataArray(arrayOfData);
+  }
 
   function Song(data) {
     const name = data["data"]["name"];
@@ -82,18 +94,6 @@ export default function Home({}) {
       </>
     );
   }
-  async function getSongData() {
-    let songData = getSongDetailsPromise()
-      .then((response) => response.json())
-      .then((data) => {
-        return data;
-      });
-    songData = await songData;
-    let arrayOfData = songData["tracks"]["items"].map((data) => {
-      return data;
-    });
-    setSongDataArray(arrayOfData);
-  }
   function SongList() {
     const list = {
       hidden: {
@@ -114,7 +114,7 @@ export default function Home({}) {
       <>
         <motion.div initial="hidden" animate="visible" variants={list}>
           {songDataArray.map((data) => {
-            return <Song data={data} key={data.id}></Song>;
+            return <Song data={data}></Song>;
           })}
         </motion.div>
       </>
