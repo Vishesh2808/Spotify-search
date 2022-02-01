@@ -68,15 +68,15 @@ export default function Home({data}) {
     const songUrl = data["data"]["external_urls"]["spotify"];
 
     const item = {
-      hidden: { x: -2000 },
+      hidden: { x: -1500 },
       visible: { x: 0 },
-      transition: { duration: 0.3, delay: -0.1 },
+      transition: { type:'spring',stiffness:500, delay: -0.1, },
     };
     return (
       <>
         <motion.div
           variants={item}
-          whileHover={{ scale: 1.1 }}
+          whileHover={{ scale: 1.05 }}
           style={Styles["Song"]}
         >
           <img style={Styles["coverImage"]} src={coverUrl} alt={name}></img>
@@ -85,10 +85,11 @@ export default function Home({data}) {
             <h5>{artist}</h5>
           </div>
           <a href={songUrl} style={Styles["spotifyLogo"]} target="blank">
-            <img
+            <motion.img
               src="https://www.freepnglogos.com/uploads/spotify-logo-png/spotify-download-logo-30.png"
               style={Styles["spotifyLogo"]}
-            ></img>
+              whileHover={{scale:1.1}}
+            ></motion.img>
           </a>
         </motion.div>
       </>
@@ -106,7 +107,7 @@ export default function Home({data}) {
         opacity: 1,
         transition: {
           when: "beforeChildren",
-          staggerChildren: 0.3,
+          staggerChildren: 0.1,
         },
       },
     };
@@ -120,6 +121,16 @@ export default function Home({data}) {
       </>
     );
   }
+
+  if(process.browser){
+      document.getElementById('songNameInput').addEventListener('keyup', event =>{
+        if(event.key === 'Enter'){
+          getSongData()
+          console.log("object")
+        }
+      })
+    }
+
   return (
     <>
       <Head>
