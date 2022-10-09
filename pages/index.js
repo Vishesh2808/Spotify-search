@@ -9,7 +9,7 @@ export async function getServerSideProps() {
     body: "grant_type=client_credentials",
     headers: {
       Authorization:
-      process.env.ATH,
+      process.env.AUTH,
       "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
     },
     json: true,
