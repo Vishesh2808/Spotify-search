@@ -9,7 +9,7 @@ export async function getServerSideProps() {
     body: "grant_type=client_credentials",
     headers: {
       Authorization:
-        "Basic OTMyMWUxZjAwYjZiNDIyNWE4Yzg5NDVmODVjODllOGM6NzhkMGM5Mzg4N2M5NGEyMzgyOTNmZjViOWFiODgxNDY=",
+      {secret.AUTH},
       "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
     },
     json: true,
